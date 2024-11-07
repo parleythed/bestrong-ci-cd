@@ -42,7 +42,6 @@ jobs:
       export TF_VAR_sql_administrator_login=$(sql_administrator_login)
       export TF_VAR_sql_administrator_login_password=$(sql_administrator_password)
       terraform plan -out=tfplan -input=false \
-        -var "tenant_id=${tenantId}" \
         -var "sql_administrator_login=${sql_administrator_login}" \
         -var "sql_administrator_login_password=${sql_administrator_password}"
     displayName: 'Terraform Plan'
@@ -97,7 +96,6 @@ jobs:
       export TF_VAR_sql_administrator_login=$(sql_administrator_login)
       export TF_VAR_sql_administrator_login_password=$(sql_administrator_password)
       terraform plan -out=tfplan -input=false \
-        -var "tenant_id=${tenantId}" \
         -var "sql_administrator_login=${sql_administrator_login}" \
         -var "sql_administrator_login_password=${sql_administrator_password}"
     displayName: 'Terraform Plan'
