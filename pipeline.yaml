@@ -1,10 +1,7 @@
-trigger:
-  branches:
-    include:
-      - main
+trigger: none
 
 variables:
-  - group: AzureSecrets
+- group: AzureSecrets
 
 jobs:
 - job: terraformCI
@@ -14,42 +11,53 @@ jobs:
   steps:
   - checkout: self
 
-  - task: AzureCLI@2
-    inputs:
-      azureSubscription: 'AzureSub1'
-      scriptType: 'bash'
-      scriptLocation: 'inlineScript'
-      inlineScript: |
-        echo "Running Terraform Init"
-        terraform init
+  - script: |
+      export ARM_CLIENT_ID=$(servicePrincipalId)
+      export ARM_CLIENT_SECRET=$(servicePrincipalKey)
+      export ARM_SUBSCRIPTION_ID=$(subscriptionId)
+      export ARM_TENANT_ID=$(tenantId)
+      export TF_VAR_sql_administrator_login=$(sql_administrator_login)
+      export TF_VAR_sql_administrator_login_password=$(sql_administrator_password)
+    displayName: 'Set Environment Variables'
+    
+  - script: |
+      export ARM_CLIENT_ID=$(servicePrincipalId)
+      export ARM_CLIENT_SECRET=$(servicePrincipalKey)
+      export ARM_SUBSCRIPTION_ID=$(subscriptionId)
+      export ARM_TENANT_ID=$(tenantId)
+      export TF_VAR_sql_administrator_login=$(sql_administrator_login)
+      export TF_VAR_sql_administrator_login_password=$(sql_administrator_password)
+      terraform init
     displayName: 'Terraform Init'
-
-  - task: AzureCLI@2
-    inputs:
-      azureSubscription: 'AzureSub1'
-      scriptType: 'bash'
-      scriptLocation: 'inlineScript'
-      inlineScript: |
-        terraform validate
+    
+  - script: |
+      terraform validate
     displayName: 'Terraform Validate'
     
-  - task: AzureCLI@2
-    inputs:
-      azureSubscription: 'AzureSub1'
-      scriptType: 'bash'
-      scriptLocation: 'inlineScript'
-      inlineScript: |
-        terraform plan -out=tfplan -input=false
+  - script: |
+      export ARM_CLIENT_ID=$(servicePrincipalId)
+      export ARM_CLIENT_SECRET=$(servicePrincipalKey)
+      export ARM_SUBSCRIPTION_ID=$(subscriptionId)
+      export ARM_TENANT_ID=$(tenantId)
+      export TF_VAR_sql_administrator_login=$(sql_administrator_login)
+      export TF_VAR_sql_administrator_login_password=$(sql_administrator_password)
+      terraform plan -out=tfplan -input=false \
+        -var "tenant_id=${tenantId}" \
+        -var "sql_administrator_login=${sql_administrator_login}" \
+        -var "sql_administrator_login_password=${sql_administrator_password}"
     displayName: 'Terraform Plan'
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
     
-  - task: AzureCLI@2
-    inputs:
-      azureSubscription: 'AzureSub1'
-      scriptType: 'bash'
-      scriptLocation: 'inlineScript'
-      inlineScript: |
-        terraform apply -input=false tfplan
+  - script: |
+      export ARM_CLIENT_ID=$(servicePrincipalId)
+      export ARM_CLIENT_SECRET=$(servicePrincipalKey)
+      export ARM_SUBSCRIPTION_ID=$(subscriptionId)
+      export ARM_TENANT_ID=$(tenantId)
+      export TF_VAR_sql_administrator_login=$(sql_administrator_login)
+      export TF_VAR_sql_administrator_login_password=$(sql_administrator_password)
+      terraform apply -input=false tfplan
     displayName: 'Terraform Apply'
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
 
 - job: terraformPR
   displayName: 'Terraform PR'
@@ -58,34 +66,39 @@ jobs:
   steps:
   - checkout: self
 
-  - task: AzureCLI@2
-    inputs:
-      azureSubscription: 'AzureSub1'
-      scriptType: 'bash'
-      scriptLocation: 'inlineScript'
-      inlineScript: |
-        echo "Running Terraform Init"
-        terraform init
+  - script: |
+      export ARM_CLIENT_ID=$(servicePrincipalId)
+      export ARM_CLIENT_SECRET=$(servicePrincipalKey)
+      export ARM_SUBSCRIPTION_ID=$(subscriptionId)
+      export ARM_TENANT_ID=$(tenantId)
+      export TF_VAR_sql_administrator_login=$(sql_administrator_login)
+      export TF_VAR_sql_administrator_login_password=$(sql_administrator_password)
+    displayName: 'Set Environment Variables'
+
+  - script: |
+      export ARM_CLIENT_ID=$(servicePrincipalId)
+      export ARM_CLIENT_SECRET=$(servicePrincipalKey)
+      export ARM_SUBSCRIPTION_ID=$(subscriptionId)
+      export ARM_TENANT_ID=$(tenantId)
+      export TF_VAR_sql_administrator_login=$(sql_administrator_login)
+      export TF_VAR_sql_administrator_login_password=$(sql_administrator_password)
+      terraform init
     displayName: 'Terraform Init'
     
-  - task: AzureCLI@2
-    inputs:
-      azureSubscription: 'AzureSub1'
-      scriptType: 'bash'
-      scriptLocation: 'inlineScript'
-      inlineScript: |
-        terraform validate
+  - script: |
+      terraform validate
     displayName: 'Terraform Validate'
     
-  - task: AzureCLI@2
-    inputs:
-      azureSubscription: 'AzureSub1'
-      scriptType: 'bash'
-      scriptLocation: 'inlineScript'
-      inlineScript: |
-        terraform plan -out=tfplan -input=false \
-          -var "tenant_id=${tenantId}" \
-          -var "sql_administrator_login=${sql_administrator_login}" \
-          -var "sql_administrator_login_password=${sql_administrator_password}"
+  - script: |
+      export ARM_CLIENT_ID=$(servicePrincipalId)
+      export ARM_CLIENT_SECRET=$(servicePrincipalKey)
+      export ARM_SUBSCRIPTION_ID=$(subscriptionId)
+      export ARM_TENANT_ID=$(tenantId)
+      export TF_VAR_sql_administrator_login=$(sql_administrator_login)
+      export TF_VAR_sql_administrator_login_password=$(sql_administrator_password)
+      terraform plan -out=tfplan -input=false \
+        -var "tenant_id=${tenantId}" \
+        -var "sql_administrator_login=${sql_administrator_login}" \
+        -var "sql_administrator_login_password=${sql_administrator_password}"
     displayName: 'Terraform Plan'
     condition: and(succeeded(), ne(variables['Build.SourceBranch'], 'refs/heads/main'))
