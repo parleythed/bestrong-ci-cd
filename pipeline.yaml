@@ -16,6 +16,8 @@ jobs:
       export ARM_CLIENT_SECRET=$(servicePrincipalKey)
       export ARM_SUBSCRIPTION_ID=$(subscriptionId)
       export ARM_TENANT_ID=$(tenantId)
+      export TF_VAR_sql_administrator_login=$(sql_administrator_login)
+      export TF_VAR_sql_administrator_login_password=$(sql_administrator_password)
     displayName: 'Set Environment Variables'
     
   - script: |
@@ -23,6 +25,8 @@ jobs:
       export ARM_CLIENT_SECRET=$(servicePrincipalKey)
       export ARM_SUBSCRIPTION_ID=$(subscriptionId)
       export ARM_TENANT_ID=$(tenantId)
+      export TF_VAR_sql_administrator_login=$(sql_administrator_login)
+      export TF_VAR_sql_administrator_login_password=$(sql_administrator_password)
       terraform init
     displayName: 'Terraform Init'
 
@@ -31,6 +35,8 @@ jobs:
       export ARM_CLIENT_SECRET=$(servicePrincipalKey)
       export ARM_SUBSCRIPTION_ID=$(subscriptionId)
       export ARM_TENANT_ID=$(tenantId)
+      export TF_VAR_sql_administrator_login=$(sql_administrator_login)
+      export TF_VAR_sql_administrator_login_password=$(sql_administrator_password)
       terraform import azurerm_resource_group.rg /subscriptions/f80303f7-6763-4988-a828-9a2836f89e14/resourceGroups/BeStrongApplication
     displayName: 'Terraform Import Resource Group'
   
